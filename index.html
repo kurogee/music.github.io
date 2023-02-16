@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音楽プレイヤー</title>
+</head>
+<body>
+    <h2>音楽プレイヤー</h2>
+    <hr style="width: 80%;">
+
+    <h2 id="title"></h2>
+    <div id="time"></div>
+    <audio id="audio"></audio>
+
+    <br>
+        <button onclick="PlayORPause();" style="width: 90%; height: 80px;"><h3>Play / Pause</h3></button>
+    <br>
+        <button onclick="back10();" style="width: 17%;"><h3>10s←</h3></button>
+        <button onclick="stop();" style="width: 17%;"><h3>STOP</h3></button>
+        <button onclick="back();" style="width: 17%;"><h3>BACK</h3></button>
+        <button onclick="go();" style="width: 17%;"><h3>NEXT</h3></button>
+        <button onclick="go10();" style="width: 17%;"><h3>→10s</h3></button>
+
+    <script>
+        function play_next(audio, title, index, playlist) {
+            if (index < playlist.length) {
+                audio.src = dir + playlist[index].url;
+                title.innerHTML = playlist[index].artist + " - " + playlist[index].title;
+                audio.play();
+            } else {
+                index = 0;
+                audio.src = dir + playlist[index].url;
+                title.innerHTML = playlist[index].artist + " - " + playlist[index].title;
+                audio.play();
+            }
+        }
+        
+        const playlist = [
+            {url: "celestial.mp3", title: "celestial", artist: "Ed sheeran"},
+            {url: "Help!.mp3", title: "Help!", artist: "The Beatles"},
+            {url: "Miracles.mp3", title: "Miracles", artist: "Mike Candys feat. Maury"},
+            {url: "Ob-La-Di, Ob-La-Da.mp3", title: "Ob-La-Di, Ob-La-Da", artist: "The Beatles"},
+            {url: "Wellerman.mp3", title: "Wellerman", artist: "Nathan Evans"},
+            {url: "World's Smallest Violin.mp3", title: "World's Smallest Violin", artist: "AJR"}
+        ];
+        const dir = "./musics/";
+
+        let audio = document.getElementById("audio");
+        let title = document.getElementById("title");
+        let index = 0;
+        let play = false;
+
+        audio.style.width = '60%';
+
+        audio.controls = false;
+
+        audio.src = dir + playlist[index].url;
+        title.innerHTML = playlist[index].artist + " - " + playlist[index].title;
+
+        audio.addEventListener("ended", () => {
+            index++;
+            play_next(audio, title, index, playlist);
+        });
+
+        audio.addEventListener("timeupdate", () => {
+            let hour = Math.floor(audio.currentTime / 3600);
+            let min = Math.floor(audio.currentTime % 3600 / 60);
+            let rem = Math.floor(audio.currentTime % 60);
+
+            let allhour = Math.floor(audio.duration / 3600);
+            let allmin = Math.floor(audio.duration % 3600 / 60);
+            let allrem = Math.floor(audio.duration % 60);
+
+            let text = `${hour}:${min}:${rem} / ${allhour}:${allmin}:${allrem}`;
+            if (!text.match(/NaN/))
+                document.getElementById("time").innerHTML = text;
+        });
+
+        function go() {
+            index++;
+            play_next(audio, title, index, playlist);
+        }
+
+        function back() {
+            index--;
+            if (index <= -1) {
+                index = playlist.length;
+            }
+            play_next(audio, title, index, playlist);
+        }
+
+        function PlayORPause() {
+            if (play) {
+                audio.pause();
+                play = false;
+            } else {
+                audio.play();
+                play = true;
+            }
+        }
+
+        function stop() {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+
+        function go10() {
+            audio.currentTime += 10;
+        }
+
+        function back10() {
+            audio.currentTime -= 10;
+        }
+    </script>
+
+    <style>
+        * {
+            text-align: center;
+        }
+    </style>
+</body>
+</html>
